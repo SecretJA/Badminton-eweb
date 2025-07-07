@@ -1,0 +1,24 @@
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/.next/
+
+# Environment
+.env
+
+# System
+.DS_Store
+Thumbs.db
+
+# Test/Uploads
+uploads/
+
+# OS scripts
+install.bat
+install.sh
+
+# Docs (nếu không dùng)
+SECURITY.md
+TROUBLESHOOTING.md
