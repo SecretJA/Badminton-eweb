@@ -83,22 +83,25 @@ EOL
                 script {
                     // Kiểm tra health của ứng dụng
                     sh '''
-                        # Đợi 30 giây cho ứng dụng khởi động
-                        sleep 30
-                        
-                        # Kiểm tra frontend
+                        # Đợi 45 giây cho ứng dụng khởi động (tăng delay)
+                        sleep 45
+
+                        # Kiểm tra frontend (in log nếu lỗi)
                         if curl -f http://localhost:80 >/dev/null 2>&1; then
                             echo "Frontend is running"
                         else
                             echo "Frontend health check failed"
+                            echo "==== NGINX LOG ===="
+                            docker logs ${DOCKER_IMAGE} || true
                             exit 1
                         fi
-                        
+
                         # Kiểm tra backend
                         if curl -f http://localhost:5000/api/health >/dev/null 2>&1; then
                             echo "Backend is running"
                         else
                             echo "Backend health check failed"
+                            docker logs ${DOCKER_IMAGE} || true
                             exit 1
                         fi
                     '''
