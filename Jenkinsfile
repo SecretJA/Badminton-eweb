@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'badminton-web'
         DOCKER_TAG = 'latest'
-        # Các biến môi trường đúng với file .env thực tế
+        // Các biến môi trường đúng với file .env thực tế
         PORT = '5000'
         NODE_ENV = 'production'
         MONGODB_URI = credentials('MONGODB_URI')
