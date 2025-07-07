@@ -4,11 +4,16 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'badminton-web'
         DOCKER_TAG = 'latest'
-        // Định nghĩa các credentials được cấu hình trong Jenkins
-        MONGODB_CREDS = credentials('mongodb-credentials')
-        CLOUDINARY_CREDS = credentials('cloudinary-credentials')
-        JWT_SECRET = credentials('jwt-secret')
-        ENCRYPTION_KEY = credentials('encryption-key')
+        # Các biến môi trường đúng với file .env thực tế
+        PORT = '5000'
+        NODE_ENV = 'production'
+        MONGODB_URI = credentials('MONGODB_URI')
+        JWT_SECRET = credentials('JWT_SECRET')
+        ENCRYPTION_KEY = credentials('ENCRYPTION_KEY')
+        CLOUDINARY_CLOUD_NAME = credentials('CLOUDINARY_CLOUD_NAME')
+        CLOUDINARY_API_KEY = credentials('CLOUDINARY_API_KEY')
+        CLOUDINARY_API_SECRET = credentials('CLOUDINARY_API_SECRET')
+        FRONTEND_URL = credentials('FRONTEND_URL')
     }
     
     stages {
@@ -22,18 +27,18 @@ pipeline {
         stage('Create Environment File') {
             steps {
                 script {
-                    // Tạo file .env với các biến môi trường từ Jenkins credentials
+                    // Tạo file .env đúng chuẩn dự án từ Jenkins credentials
                     sh '''
-                        cat > .env << EOL
-PORT=5000
-NODE_ENV=production
-MONGODB_URI=${MONGODB_CREDS_PSW}
+cat > .env <<EOL
+PORT=${PORT}
+NODE_ENV=${NODE_ENV}
+MONGODB_URI=${MONGODB_URI}
 JWT_SECRET=${JWT_SECRET}
 ENCRYPTION_KEY=${ENCRYPTION_KEY}
-CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CREDS_USR}
-CLOUDINARY_API_KEY=${CLOUDINARY_CREDS_PSW}
-CLOUDINARY_API_SECRET=${CLOUDINARY_CREDS}
-FRONTEND_URL=https://your-domain.com
+CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+FRONTEND_URL=${FRONTEND_URL}
 EOL
                     '''
                 }

@@ -1,7 +1,9 @@
 
-# CI/CD Setup Guide with Jenkins (AWS EC2 Free Tier)
+---
+title: CI/CD Setup Guide with Jenkins (AWS EC2 Free Tier)
+---
 
-## Prerequisites
+## Yêu cầu hệ thống
 
 1. AWS EC2 instance (Free Tier):
    - Ubuntu Server 22.04 LTS (khuyến nghị, nhẹ, ổn định)
@@ -14,7 +16,7 @@
 
 2. GitHub repository với mã nguồn project
 
-## Installation Steps
+## Các bước cài đặt
 
 
 ### 1. Install Jenkins & Java (latest stable)
@@ -80,23 +82,35 @@ sudo systemctl restart jenkins
    - GitHub Integration
    - Credentials Plugin
 
-### 4. Configure Jenkins Credentials
 
-1. Vào Jenkins Dashboard > Manage Jenkins > Manage Credentials
-2. Thêm các credentials:
-   - mongodb-credentials (Username with password)
-     - ID: mongodb-credentials
-     - Username: [MongoDB database name]
-     - Password: [MongoDB connection string]
-   - cloudinary-credentials (Secret text)
-     - ID: cloudinary-credentials
-     - Secret: [Cloudinary API Secret]
-   - jwt-secret (Secret text)
-     - ID: jwt-secret
-     - Secret: [Your JWT secret key]
-   - encryption-key (Secret text)
-     - ID: encryption-key
-     - Secret: [Your 64-character encryption key]
+### 4. Thêm Jenkins Credentials (biến môi trường bảo mật)
+
+**Hướng dẫn chi tiết:**
+
+1. Truy cập Jenkins Dashboard > Manage Jenkins > Manage Credentials
+2. Chọn (hoặc tạo) domain `Global` (nếu chưa có, chọn `(global)` hoặc `Global credentials (unrestricted)`)
+3. Nhấn **Add Credentials** (Thêm thông tin xác thực)
+4. Ở mục **Kind**, chọn **Secret text**
+5. Ở mục **Secret**, nhập giá trị tương ứng với biến môi trường (ví dụ: connection string MongoDB, JWT secret, v.v.)
+6. Ở mục **ID**, nhập đúng tên biến môi trường (ví dụ: `MONGODB_URI`, `JWT_SECRET`, ...)
+7. Nhấn **OK** để lưu lại
+
+**Lặp lại các bước trên cho từng biến sau:**
+
+| ID (tên biến)           | Giá trị cần nhập (Secret)                  |
+|-------------------------|--------------------------------------------|
+| MONGODB_URI             | MongoDB Atlas connection string            |
+| JWT_SECRET              | JWT secret key                             |
+| ENCRYPTION_KEY          | 64 ký tự hex cho AES-256                   |
+| CLOUDINARY_CLOUD_NAME   | Cloudinary cloud name                      |
+| CLOUDINARY_API_KEY      | Cloudinary API key                         |
+| CLOUDINARY_API_SECRET   | Cloudinary API secret                      |
+| FRONTEND_URL            | URL frontend (ví dụ: http://localhost:3000)|
+
+> **Lưu ý:**
+> - Phải nhập đúng **ID** (không có dấu cách, không thêm ký tự thừa)
+> - Không public các giá trị này lên GitHub
+> - Sau khi tạo xong, Jenkinsfile sẽ tự động lấy các giá trị này để build `.env` cho ứng dụng
 
 ### 5. Configure GitHub Webhook
 
@@ -121,13 +135,13 @@ sudo systemctl restart jenkins
    - Branch Specifier: */main
    - Script Path: Jenkinsfile
 
-## Usage
+## Sử dụng
 
 1. The pipeline will automatically trigger when you push to the main branch
 2. You can also trigger manually from Jenkins dashboard
 3. Monitor the build process in Jenkins
 
-## Troubleshooting
+## Khắc phục sự cố
 
 1. Nếu Jenkins không truy cập được Docker:
    ```bash
@@ -148,7 +162,7 @@ sudo systemctl restart jenkins
    docker logs [container-id]
    ```
 
-## Security Notes
+## Lưu ý bảo mật
 
 1. Luôn dùng Jenkins credentials cho dữ liệu nhạy cảm
 2. Thường xuyên update hệ thống bằng `sudo apt update && sudo apt upgrade -y`
@@ -156,7 +170,7 @@ sudo systemctl restart jenkins
 4. Có thể dùng AWS Secrets Manager cho production
 5. Kiểm tra kỹ security group của EC2, chỉ mở port cần thiết
 
-## Maintenance
+## Bảo trì
 
 1. Backup Jenkins:
    ```bash

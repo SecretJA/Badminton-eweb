@@ -85,7 +85,7 @@ badminton-web/
 │   │   └── globals.css
 │   └── package.json
 ├── package.json
-├── env.example
+├── .env (tự tạo, không commit lên GitHub)
 └── README.md
 ```
 
@@ -114,9 +114,10 @@ npm install
 cd ..
 ```
 
+
 ### Bước 3: Cấu hình môi trường
 
-Tạo file `.env` trong thư mục gốc dựa trên `env.example`:
+Tạo file `.env` trong thư mục gốc với nội dung mẫu như sau (không commit file này lên GitHub):
 
 ```env
 # Server Configuration
@@ -124,10 +125,13 @@ PORT=5000
 NODE_ENV=development
 
 # MongoDB Atlas Connection
-MONGODB_URI=mongodb+srv://shop_user:shop_password@badminton-shop-cluster.wcjjhqv.mongodb.net/?retryWrites=true&w=majority&appName=badminton-shop-cluster
+MONGODB_URI=your_mongodb_connection_string
 
 # JWT Secret
-JWT_SECRET=badminton_shop_jwt_secret_key_2024
+JWT_SECRET=your_jwt_secret
+
+# Encryption Key (64 hex characters for AES-256)
+ENCRYPTION_KEY=your_64_char_encryption_key
 
 # Cloudinary Configuration
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -137,6 +141,8 @@ CLOUDINARY_API_SECRET=your_api_secret
 # Frontend URL
 FRONTEND_URL=http://localhost:3000
 ```
+
+> **Lưu ý:** Không public file `.env` hoặc bất kỳ file nào chứa thông tin nhạy cảm lên GitHub. Đã loại bỏ file `env.example` khỏi repo để đảm bảo an toàn.
 
 ### Bước 4: Cấu hình MongoDB Atlas
 
@@ -245,17 +251,19 @@ npm run dev-full
 
 ## 🚀 Deployment
 
-### Backend (Heroku/Railway)
-```bash
-# Build và deploy
-npm run build
-```
 
-### Frontend (Vercel/Netlify)
-```bash
-cd frontend
-npm run build
-```
+### Triển khai CI/CD với Jenkins trên AWS EC2
+
+Xem hướng dẫn chi tiết trong file `CICD_SETUP.md` (đã tối ưu cho EC2 Free Tier, OpenJDK mới nhất, Docker, Jenkins, bảo mật biến môi trường, loại bỏ file nhạy cảm khi public).
+
+**Các bước chính:**
+1. Tạo EC2 Ubuntu 22.04 LTS Free Tier
+2. Cài Jenkins, Docker, cấu hình quyền cho user Jenkins và ubuntu
+3. Tạo các Jenkins credentials đúng tên biến môi trường trong `.env`
+4. Đảm bảo `.gitignore` đã loại trừ `.env`, `node_modules`, `frontend/.next`, các file test/script không cần thiết
+5. Đẩy code lên GitHub, pipeline Jenkins sẽ tự động build & deploy
+
+> **Lưu ý:** Không sử dụng các file `.md` không cần thiết như `TROUBLESHOOTING.md`, `SECURITY.md` trong repo public.
 
 ## 🤝 Đóng góp
 
