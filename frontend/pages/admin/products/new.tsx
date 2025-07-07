@@ -42,7 +42,7 @@ const AdminProductFormPage: React.FC = () => {
     images: [],
     specifications: {}
   });
-  const [errors, setErrors] = useState<Partial<ProductForm>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isUploading, setIsUploading] = useState(false);
 
   // Create product mutation
@@ -64,7 +64,7 @@ const AdminProductFormPage: React.FC = () => {
   );
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProductForm> = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'Tên sản phẩm là bắt buộc';
@@ -82,7 +82,7 @@ const AdminProductFormPage: React.FC = () => {
       newErrors.description = 'Mô tả không được vượt quá 1000 ký tự';
     }
 
-    if (formData.price <= 0) {
+    if (typeof formData.price !== 'number' || isNaN(formData.price) || formData.price <= 0) {
       newErrors.price = 'Giá phải lớn hơn 0';
     }
 
@@ -94,7 +94,7 @@ const AdminProductFormPage: React.FC = () => {
       newErrors.category = 'Danh mục là bắt buộc';
     }
 
-    if (formData.stock < 0) {
+    if (typeof formData.stock !== 'number' || isNaN(formData.stock) || formData.stock < 0) {
       newErrors.stock = 'Số lượng tồn kho không được âm';
     }
 
@@ -120,7 +120,8 @@ const AdminProductFormPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      const { [field]: removed, ...rest } = errors;
+      setErrors(rest);
     }
   };
 
