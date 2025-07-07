@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ['res.cloudinary.com', 'localhost'],
     formats: ['image/webp', 'image/avif'],
@@ -17,6 +16,7 @@ const nextConfig = {
       },
     ];
   },
+  output: 'export',
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

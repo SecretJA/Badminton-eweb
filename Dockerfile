@@ -13,8 +13,8 @@ RUN npm run install-all
 # Copy source code
 COPY . .
 
-# Build frontend (Next.js build & export)
-RUN cd frontend && npm run build && npm run export
+# Build frontend (Next.js static export)
+RUN cd frontend && npm run build
 
 # Production stage
 FROM nginx:alpine
