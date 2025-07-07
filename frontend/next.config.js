@@ -4,6 +4,7 @@ const nextConfig = {
   images: {
     domains: ['res.cloudinary.com', 'localhost'],
     formats: ['image/webp', 'image/avif'],
+    unoptimized: true,
   },
   env: {
     API_URL: process.env.API_URL || 'http://localhost:5000/api',
