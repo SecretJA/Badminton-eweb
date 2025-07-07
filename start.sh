@@ -1,5 +1,5 @@
 #!/bin/sh
-# Start nginx
-nginx
-# Start node backend
+# Start nginx in background
+nginx &
+# Start node backend (foreground)
 node /app/backend/server.js
