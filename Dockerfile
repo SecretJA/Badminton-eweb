@@ -34,8 +34,8 @@ COPY --from=builder /app/frontend/out /usr/share/nginx/html
 # Cài đặt nginx
 RUN apk add --no-cache nginx
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx configuration (as main config)
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Cài đặt supervisor
 RUN apk add --no-cache supervisor
