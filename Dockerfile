@@ -40,6 +40,12 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Cài đặt supervisor
 RUN apk add --no-cache supervisor
 
+# Tạo thư mục cho nginx nếu chưa có (fix lỗi không start được nginx)
+RUN mkdir -p /var/run/nginx
+
+# Đảm bảo quyền truy cập static export
+RUN chmod -R 755 /usr/share/nginx/html || true
+
 # Copy file cấu hình supervisor
 COPY supervisord.conf /etc/supervisord.conf
 
