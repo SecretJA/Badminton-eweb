@@ -1,5 +1,1 @@
-#!/bin/sh
-# Start nginx in background
-nginx &
-# Start node backend (foreground)
-node /app/backend/server.js
+# Không còn sử dụng, đã thay bằng supervisor để quản lý process.

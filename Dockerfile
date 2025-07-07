@@ -37,10 +37,13 @@ RUN apk add --no-cache nginx
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Script start cả nginx và node backend
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Cài đặt supervisor
+RUN apk add --no-cache supervisor
+
+# Copy file cấu hình supervisor
+COPY supervisord.conf /etc/supervisord.conf
 
 EXPOSE 80
 
-CMD ["/start.sh"]
+# Start cả nginx và node backend bằng supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
