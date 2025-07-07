@@ -17,23 +17,30 @@ COPY . .
 RUN cd frontend && npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM node:18-alpine AS prod
 
-# Copy frontend static export (Next.js)
-COPY --from=builder /app/frontend/out /usr/share/nginx/html
+WORKDIR /app
 
 # Copy backend
 COPY --from=builder /app/backend /app/backend
 COPY --from=builder /app/package*.json /app/
 
 # Install production dependencies for backend
-WORKDIR /app
 RUN npm ci --only=production
+
+# Copy frontend static export (Next.js) to /usr/share/nginx/html (will be used by nginx)
+COPY --from=builder /app/frontend/out /usr/share/nginx/html
+
+# Cài đặt nginx
+RUN apk add --no-cache nginx
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Script start cả nginx và node backend
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 80
 
-# Start both nginx and node server
-CMD ["sh", "-c", "nginx && cd /app && node backend/server.js"]
+CMD ["/start.sh"]
