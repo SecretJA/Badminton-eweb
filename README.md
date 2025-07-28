@@ -232,15 +232,6 @@ npm run dev-full
 - `POST /api/upload/image` - Upload hình ảnh đơn
 - `POST /api/upload/images` - Upload nhiều hình ảnh
 
-## 👥 Tài khoản mẫu
-
-### Admin
-- Email: admin@badmintonshop.com
-- Password: admin123
-
-### Customer
-- Email: customer@badmintonshop.com
-- Password: customer123
 
 ## 🔧 Tính năng nâng cao
 
@@ -295,33 +286,6 @@ Tóm tắt:
 ### Triển khai CI/CD với Jenkins trên AWS EC2
 
 Xem hướng dẫn chi tiết trong file `CICD_SETUP.md` (đã tối ưu cho EC2 Free Tier, OpenJDK mới nhất, Docker, Jenkins, bảo mật biến môi trường, loại bỏ file nhạy cảm khi public).
-
-**Các bước chính:**
-1. Tạo EC2 Ubuntu 22.04 LTS Free Tier
-2. Cài Jenkins, Docker, cấu hình quyền cho user Jenkins và ubuntu
-3. Tạo các Jenkins credentials đúng tên biến môi trường trong `.env`
-4. Đảm bảo `.gitignore` đã loại trừ `.env`, `node_modules`, `frontend/.next`, các file test/script không cần thiết
-5. Đẩy code lên GitHub, pipeline Jenkins sẽ tự động build & deploy
-
-> **Lưu ý:** Không sử dụng các file `.md` không cần thiết như `TROUBLESHOOTING.md`, `SECURITY.md` trong repo public.
-
-## 🤝 Đóng góp
-
-1. Fork dự án
-2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Tạo Pull Request
-
-## 📝 License
-
-Dự án này được phát hành dưới MIT License.
-
-## 📞 Liên hệ
-
-- Email: info@badmintonshop.com
-- Website: https://badmintonshop.com
-- GitHub: [repository-url]
 
 ## 🙏 Cảm ơn
 
