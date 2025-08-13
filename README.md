@@ -1,4 +1,24 @@
+<<<<<<< HEAD
 # # 🏸 Badminton E-commerce Website## 📖 Mục lục
+=======
+
+
+<h1 align="center">🏸 Badminton Shop - Hệ thống thương mại điện tử bán linh kiện cầu lông</h1>
+<p align="center">
+  <img src="https://img.shields.io/badge/Stack-MERN-blue" alt="MERN Stack"/>
+  <img src="https://img.shields.io/badge/Frontend-Next.js-blueviolet" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Backend-Express-green" alt="Express"/>
+  <img src="https://img.shields.io/badge/CI%2FCD-Jenkins-orange" alt="Jenkins"/>
+  <img src="https://img.shields.io/badge/Cloud-AWS-yellow" alt="AWS"/>
+</p>
+
+<p align="center">
+  <a href="./CICD_SETUP.md" style="font-size:1.1em;font-weight:bold;">
+    <img src="https://img.shields.io/badge/Xem%20hướng%20dẫn%20CI%2FCD%20và%20triển%20khai-blue?logo=jenkins&logoColor=white" alt="CI/CD Setup"/>
+  </a>
+</p>
+
+>>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 - [🚀 Quick Start](#-quick-start)
 - [✨ Tính năng chính](#-tính-năng-chính)
@@ -110,7 +130,12 @@ Một ứng dụng thương mại điện tử chuyên về đồ cầu lông đ
 
 ## ⚡ Cài đặt nhanh
 
+<<<<<<< HEAD
 ### � Quick Start (5 phút)
+=======
+
+## 🚀 Hướng dẫn cài đặt & chạy trên máy cá nhân/IDE (Local Development)
+>>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 ```bash
 # 1. Clone repository
@@ -494,6 +519,7 @@ DELETE /api/cart/:id     # Xóa khỏi giỏ hàng
 
 ### 1. Cài đặt Extensions:
 
+<<<<<<< HEAD
 Cài đặt các extension sau trong VS Code:
 
 ```json
@@ -511,6 +537,8 @@ Cài đặt các extension sau trong VS Code:
 ```
 
 ### 2. Cấu hình Workspace:
+=======
+>>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 Tạo file `.vscode/settings.json`:
 
@@ -536,7 +564,34 @@ Tạo file `.vscode/settings.json`:
 
 ### 3. Cấu hình Tasks:
 
+<<<<<<< HEAD
 Tạo file `.vscode/tasks.json`:
+=======
+
+
+## 🔄 Lưu ý: Hướng dẫn khởi động lại website khi deploy production (xem chi tiết trong file CICD_SETUP.md)
+
+Nếu bạn deploy trên server (EC2, VPS, máy chủ thật), khi máy chủ bị tắt hoặc khởi động lại, hãy xem hướng dẫn chi tiết khởi động lại website trong file `CICD_SETUP.md`.
+
+Tóm tắt:
+1. Đăng nhập SSH vào server, cd vào thư mục dự án.
+2. Nếu container cũ còn, xóa trước: `docker rm -f badminton-web`
+3. Chạy lại container:
+   ```bash
+   docker run -d --name badminton-web -p 80:80 -p 5000:5000 --env-file .env badminton-web:latest
+   ```
+4. Nếu cần build lại image:
+   ```bash
+   docker build -t badminton-web:latest .
+   docker run -d --name badminton-web -p 80:80 -p 5000:5000 --env-file .env badminton-web:latest
+   ```
+5. Xem log: `docker logs badminton-web`
+6. Truy cập lại web qua IP hoặc domain.
+
+**Xem hướng dẫn chi tiết, các lưu ý bảo mật, backup, log... trong file CICD_SETUP.md**
+
+## 🚀 Deployment
+>>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 ```json
 {
@@ -587,6 +642,7 @@ Tạo file `.vscode/tasks.json`:
 
 Tạo file `.vscode/launch.json`:
 
+<<<<<<< HEAD
 ```json
 {
   "version": "0.2.0",
@@ -804,3 +860,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 **⭐ Đừng quên star repo nếu project hữu ích với bạn!**
+=======
+## 🙏 Cảm ơn
+
+Cảm ơn bạn đã quan tâm đến dự án Badminton Shop! Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi. 
+>>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
