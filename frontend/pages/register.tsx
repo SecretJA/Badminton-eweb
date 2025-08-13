@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
-import axios from 'axios';
+import axios from '../lib/axios';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiPhone } from 'react-icons/fi';
@@ -34,7 +34,7 @@ const RegisterPage: React.FC = () => {
 
   const registerMutation = useMutation(
     async (data: Omit<RegisterForm, 'confirmPassword'>) => {
-      const response = await axios.post('/api/auth/register', data);
+      const response = await axios.post('/auth/register', data);
       return response.data;
     },
     {

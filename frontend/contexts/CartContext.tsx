@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import axios from '../lib/axios';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
@@ -63,7 +63,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     
     try {
       setLoading(true);
-      const response = await axios.get('/api/cart');
+      const response = await axios.get('/cart');
       setCart(response.data);
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -88,7 +88,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     try {
       setLoading(true);
-      const response = await axios.post('/api/cart', {
+      const response = await axios.post('/cart', {
         productId,
         quantity,
         selectedOptions: options
@@ -107,7 +107,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     try {
       setLoading(true);
-      const response = await axios.put(`/api/cart/${itemId}`, { quantity });
+      const response = await axios.put(`/cart/${itemId}`, { quantity });
       setCart(response.data);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Lỗi cập nhật giỏ hàng');
@@ -121,7 +121,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     try {
       setLoading(true);
-      const response = await axios.delete(`/api/cart/${itemId}`);
+      const response = await axios.delete(`/cart/${itemId}`);
       setCart(response.data);
       toast.success('Đã xóa khỏi giỏ hàng');
     } catch (error: any) {
@@ -136,7 +136,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     try {
       setLoading(true);
-      await axios.delete('/api/cart');
+      await axios.delete('/cart');
       setCart(null);
       toast.success('Đã làm trống giỏ hàng');
     } catch (error: any) {

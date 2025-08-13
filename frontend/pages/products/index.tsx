@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import ProductCard from '../../components/Products/ProductCard';
@@ -84,7 +84,7 @@ const ProductsPage: React.FC = () => {
       params.append('page', currentPage.toString());
       params.append('limit', '12');
       
-      const response = await axios.get(`/api/products?${params.toString()}`);
+      const response = await axios.get(`/products?${params.toString()}`);
       return response.data;
     },
     {
@@ -93,7 +93,9 @@ const ProductsPage: React.FC = () => {
   );
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
-    const newFilters = { ...filters, [key]: value };
+    // Toggle functionality: if the same value is selected, clear it
+    const newValue = filters[key] === value ? '' : value;
+    const newFilters = { ...filters, [key]: newValue };
     setFilters(newFilters);
     updateURL(newFilters);
     setCurrentPage(1);
@@ -210,13 +212,14 @@ const ProductsPage: React.FC = () => {
                   <h4 className="font-medium text-gray-900 mb-3">Danh mục</h4>
                   <div className="space-y-2">
                     {categories.map((category) => (
-                      <label key={category} className="flex items-center">
+                      <label key={category} className="flex items-center cursor-pointer">
                         <input
                           type="radio"
                           name="category"
                           value={category}
                           checked={filters.category === category}
-                          onChange={(e) => handleFilterChange('category', e.target.value)}
+                          onChange={() => {}} // Prevent default onChange
+                          onClick={() => handleFilterChange('category', category)}
                           className="mr-2 text-primary-600 focus:ring-primary-500"
                         />
                         <span className="text-sm text-gray-700">{category}</span>
@@ -230,13 +233,14 @@ const ProductsPage: React.FC = () => {
                   <h4 className="font-medium text-gray-900 mb-3">Thương hiệu</h4>
                   <div className="space-y-2">
                     {brands.map((brand) => (
-                      <label key={brand} className="flex items-center">
+                      <label key={brand} className="flex items-center cursor-pointer">
                         <input
                           type="radio"
                           name="brand"
                           value={brand}
                           checked={filters.brand === brand}
-                          onChange={(e) => handleFilterChange('brand', e.target.value)}
+                          onChange={() => {}} // Prevent default onChange
+                          onClick={() => handleFilterChange('brand', brand)}
                           className="mr-2 text-primary-600 focus:ring-primary-500"
                         />
                         <span className="text-sm text-gray-700">{brand}</span>
@@ -250,13 +254,14 @@ const ProductsPage: React.FC = () => {
                   <h4 className="font-medium text-gray-900 mb-3">Khoảng giá</h4>
                   <div className="space-y-2">
                     {priceRanges.map((range) => (
-                      <label key={range.value} className="flex items-center">
+                      <label key={range.value} className="flex items-center cursor-pointer">
                         <input
                           type="radio"
                           name="priceRange"
                           value={range.value}
                           checked={filters.priceRange === range.value}
-                          onChange={(e) => handleFilterChange('priceRange', e.target.value)}
+                          onChange={() => {}} // Prevent default onChange
+                          onClick={() => handleFilterChange('priceRange', range.value)}
                           className="mr-2 text-primary-600 focus:ring-primary-500"
                         />
                         <span className="text-sm text-gray-700">{range.label}</span>

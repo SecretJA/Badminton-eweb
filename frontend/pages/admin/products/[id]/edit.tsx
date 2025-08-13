@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery, useMutation } from 'react-query';
-import axios from 'axios';
+import axios from '../../../../lib/axios';
 import Header from '../../../../components/Layout/Header';
 import Footer from '../../../../components/Layout/Footer';
 import { FiUpload, FiX, FiSave, FiArrowLeft } from 'react-icons/fi';
@@ -50,7 +50,7 @@ const AdminProductEditPage: React.FC = () => {
   const { data: product, isLoading: loadingProduct } = useQuery(
     ['product', id],
     async () => {
-      const response = await axios.get(`/api/products/${id}`);
+      const response = await axios.get(`/products/${id}`);
       return response.data;
     },
     {
@@ -77,7 +77,7 @@ const AdminProductEditPage: React.FC = () => {
   // Update product mutation
   const updateProductMutation = useMutation(
     async (data: ProductForm) => {
-      const response = await axios.put(`/api/products/${id}`, data);
+      const response = await axios.put(`/products/${id}`, data);
       return response.data;
     },
     {
@@ -163,7 +163,7 @@ const AdminProductEditPage: React.FC = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('image', files[0]);
 
-      const response = await axios.post('/api/upload', uploadFormData, {
+      const response = await axios.post('/upload', uploadFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

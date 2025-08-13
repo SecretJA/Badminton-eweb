@@ -200,11 +200,15 @@ router.delete('/users/:id', protect, admin, async (req, res) => {
 // @access  Private/Admin
 router.get('/orders', protect, admin, async (req, res) => {
   try {
+    console.log('Admin orders query params:', req.query);
+    
     const pageSize = 50;
     const page = Number(req.query.pageNumber) || 1;
     const search = req.query.search || '';
     const status = req.query.status || '';
     const paymentStatus = req.query.paymentStatus || '';
+
+    console.log('Filters - status:', status, 'paymentStatus:', paymentStatus);
 
     let query = {};
     
@@ -221,16 +225,39 @@ router.get('/orders', protect, admin, async (req, res) => {
     }
     
     if (paymentStatus) {
-      query.paymentStatus = paymentStatus;
+      console.log('Processing payment status filter:', paymentStatus);
+      if (paymentStatus === 'paid') {
+        query.isPaid = true;
+        console.log('Set query.isPaid = true');
+      } else if (paymentStatus === 'unpaid') {
+        query.$or = [
+          { isPaid: false },
+          { isPaid: { $exists: false } },
+          { isPaid: null }
+        ];
+        console.log('Set query.$or for unpaid orders');
+      }
+      console.log('Applied payment filter:', { paymentStatus, query: JSON.stringify(query) });
     }
 
+    console.log('Final query before database call:', JSON.stringify(query, null, 2));
+
+    // First, let's check all orders to see what we have
+    const allOrders = await Order.find({}).select('_id isPaid').limit(5);
+    console.log('Sample of all orders in DB:', allOrders.map(o => ({ id: o._id.toString().slice(-8), isPaid: o.isPaid })));
+
     const count = await Order.countDocuments(query);
+    console.log('Found orders count with query:', count);
+    
     const orders = await Order.find(query)
       .populate('user', 'name email')
       .populate('orderItems.product', 'name mainImage')
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1));
+
+    console.log('Retrieved orders:', orders.length);
+    console.log('Orders isPaid values:', orders.map(o => ({ id: o._id.toString().slice(-8), isPaid: o.isPaid })));
 
     res.json({
       orders,
@@ -240,6 +267,43 @@ router.get('/orders', protect, admin, async (req, res) => {
     });
   } catch (error) {
     console.error('Get admin orders error:', error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+});
+
+// @desc    Fix orders isPaid field
+// @route   POST /api/admin/fix-orders
+// @access  Private/Admin
+router.post('/fix-orders', protect, admin, async (req, res) => {
+  try {
+    // Update all orders without isPaid field
+    const result = await Order.updateMany(
+      { 
+        $or: [
+          { isPaid: { $exists: false } },
+          { isPaid: null }
+        ]
+      },
+      { 
+        $set: { isPaid: false } 
+      }
+    );
+    
+    // Show current stats
+    const totalOrders = await Order.countDocuments({});
+    const paidOrders = await Order.countDocuments({ isPaid: true });
+    const unpaidOrders = await Order.countDocuments({ isPaid: false });
+    
+    res.json({
+      message: `Fixed ${result.modifiedCount} orders`,
+      stats: {
+        total: totalOrders,
+        paid: paidOrders,
+        unpaid: unpaidOrders
+      }
+    });
+  } catch (error) {
+    console.error('Fix orders error:', error);
     res.status(500).json({ message: 'Lỗi server' });
   }
 });

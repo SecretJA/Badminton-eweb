@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery, useMutation } from 'react-query';
-import axios from 'axios';
+import axios from '../lib/axios';
 import Image from 'next/image';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
@@ -65,7 +65,7 @@ const CheckoutPage: React.FC = () => {
   const { data: cart, isLoading } = useQuery(
     'cart',
     async () => {
-      const response = await axios.get('/api/cart');
+      const response = await axios.get('/cart');
       return response.data;
     },
     {
@@ -80,7 +80,7 @@ const CheckoutPage: React.FC = () => {
   // Create order mutation
   const createOrderMutation = useMutation(
     async (orderData: any) => {
-      const response = await axios.post('/api/orders', orderData);
+      const response = await axios.post('/orders', orderData);
       return response.data;
     },
     {

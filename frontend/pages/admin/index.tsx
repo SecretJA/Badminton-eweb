@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import { FiPackage, FiUsers, FiShoppingCart, FiDollarSign, FiPlus, FiEdit3, FiTrash2 } from 'react-icons/fi';
@@ -37,7 +37,7 @@ const AdminDashboard: React.FC = () => {
   const { data: stats, isLoading: loadingStats } = useQuery(
     'adminStats',
     async () => {
-      const response = await axios.get('/api/admin/stats');
+      const response = await axios.get('/admin/stats');
       return response.data;
     }
   );
@@ -46,7 +46,7 @@ const AdminDashboard: React.FC = () => {
   const { data: products, isLoading: loadingProducts } = useQuery(
     'adminProducts',
     async () => {
-      const response = await axios.get('/api/products?limit=10');
+      const response = await axios.get('/products?limit=10');
       return response.data.products;
     }
   );
@@ -91,7 +91,8 @@ const AdminDashboard: React.FC = () => {
                 { id: 'dashboard', label: 'Tổng quan', path: '/admin' },
                 { id: 'products', label: 'Sản phẩm', path: '/admin/products' },
                 { id: 'orders', label: 'Đơn hàng', path: '/admin/orders' },
-                { id: 'users', label: 'Người dùng', path: '/admin/users' }
+                { id: 'users', label: 'Người dùng', path: '/admin/users' },
+                { id: 'reviews', label: 'Đánh giá', path: '/admin/reviews' }
               ].map((tab) => (
                 <button
                   key={tab.id}

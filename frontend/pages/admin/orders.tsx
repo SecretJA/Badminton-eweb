@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import { FiEye, FiEdit3, FiTrash2, FiSearch, FiFilter, FiPackage, FiTruck, FiCheckCircle, FiXCircle } from 'react-icons/fi';
@@ -27,13 +27,14 @@ interface Order {
     name: string;
     email: string;
   } | null;
-  items: OrderItem[];
-  totalAmount: number;
+  orderItems: OrderItem[];
+  totalPrice: number;
   status: string;
-  paymentStatus: string;
+  paymentStatus?: string;
+  isPaid: boolean;
+  isDelivered: boolean;
   createdAt: string;
   updatedAt: string;
-  total?: number; // Added for new logic
 }
 
 const AdminOrdersPage: React.FC = () => {
@@ -54,8 +55,16 @@ const AdminOrdersPage: React.FC = () => {
       if (selectedPaymentStatus) params.append('paymentStatus', selectedPaymentStatus);
       params.append('limit', '50');
       
+      console.log('Frontend sending filters:', {
+        searchTerm,
+        selectedStatus, 
+        selectedPaymentStatus,
+        params: params.toString()
+      });
+      
       // Sử dụng đúng endpoint cho admin
-      const response = await axios.get(`/api/admin/orders?${params.toString()}`);
+      const response = await axios.get(`/admin/orders?${params.toString()}`);
+      console.log('Response data:', response.data);
       return response.data;
     }
   );
@@ -63,7 +72,7 @@ const AdminOrdersPage: React.FC = () => {
   // Update order status mutation
   const updateOrderStatusMutation = useMutation(
     async ({ orderId, status }: { orderId: string; status: string }) => {
-      const response = await axios.put(`/api/orders/${orderId}/status`, { status });
+      const response = await axios.put(`/orders/${orderId}/status`, { status });
       return response.data;
     },
     {
@@ -80,7 +89,7 @@ const AdminOrdersPage: React.FC = () => {
   // Delete order mutation
   const deleteOrderMutation = useMutation(
     async (orderId: string) => {
-      const response = await axios.delete(`/api/orders/${orderId}`);
+      const response = await axios.delete(`/orders/${orderId}`);
       return response.data;
     },
     {
@@ -151,7 +160,7 @@ const AdminOrdersPage: React.FC = () => {
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'unpaid':
         return 'bg-yellow-100 text-yellow-800';
       case 'paid':
         return 'bg-green-100 text-green-800';
@@ -164,7 +173,7 @@ const AdminOrdersPage: React.FC = () => {
 
   const getPaymentStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'unpaid':
         return 'Chờ thanh toán';
       case 'paid':
         return 'Đã thanh toán';
@@ -186,9 +195,8 @@ const AdminOrdersPage: React.FC = () => {
 
   const paymentStatusOptions = [
     { value: '', label: 'Tất cả thanh toán' },
-    { value: 'pending', label: 'Chờ thanh toán' },
-    { value: 'paid', label: 'Đã thanh toán' },
-    { value: 'failed', label: 'Thanh toán thất bại' }
+    { value: 'unpaid', label: 'Chờ thanh toán' },
+    { value: 'paid', label: 'Đã thanh toán' }
   ];
 
   return (
@@ -265,14 +273,14 @@ const AdminOrdersPage: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex items-end">
+              <div className="flex items-end gap-2">
                 <button
                   onClick={() => {
                     setSearchTerm('');
                     setSelectedStatus('');
                     setSelectedPaymentStatus('');
                   }}
-                  className="w-full btn-secondary"
+                  className="btn-secondary"
                 >
                   Xóa bộ lọc
                 </button>
@@ -344,13 +352,7 @@ const AdminOrdersPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {typeof order.total === 'number' && !isNaN(order.total)
-                              ? formatPrice(order.total)
-                              : (typeof order.totalAmount === 'number' && !isNaN(order.totalAmount))
-                                ? formatPrice(order.totalAmount)
-                                : Array.isArray(order.items)
-                                  ? formatPrice(order.items.reduce((sum, item) => sum + item.price * item.quantity, 0))
-                                  : 'Không xác định'}
+                            {formatPrice(order.totalPrice)}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -367,8 +369,8 @@ const AdminOrdersPage: React.FC = () => {
                           </select>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getPaymentStatusColor(order.paymentStatus)}`}>
-                            {getPaymentStatusText(order.paymentStatus)}
+                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getPaymentStatusColor(order.isPaid ? 'paid' : 'unpaid')}`}>
+                            {getPaymentStatusText(order.isPaid ? 'paid' : 'unpaid')}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

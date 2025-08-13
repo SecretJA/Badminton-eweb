@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import axios from 'axios';
+import axios from '../lib/axios';
 import { useRouter } from 'next/router';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
@@ -50,7 +50,7 @@ const ProfilePage: React.FC = () => {
   const { data: profile, isLoading: loadingProfile } = useQuery(
     'profile',
     async () => {
-      const response = await axios.get('/api/auth/profile');
+      const response = await axios.get('/auth/profile');
       return response.data;
     },
     {
@@ -68,7 +68,7 @@ const ProfilePage: React.FC = () => {
   const { data: ordersData, isLoading: loadingOrders } = useQuery(
     'orders',
     async () => {
-      const response = await axios.get('/api/orders');
+      const response = await axios.get('/orders');
       return response.data;
     },
     {
@@ -79,7 +79,7 @@ const ProfilePage: React.FC = () => {
   // Update profile mutation
   const updateProfileMutation = useMutation(
     async (data: { name: string; phone: string }) => {
-      const response = await axios.put('/api/auth/profile', data);
+      const response = await axios.put('/auth/profile', data);
       return response.data;
     },
     {

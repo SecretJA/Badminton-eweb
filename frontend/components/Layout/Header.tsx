@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { FiShoppingCart, FiUser, FiMenu, FiX, FiSearch, FiLogOut } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import type { RefObject } from 'react';
 
 interface Product {
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
     if (value.trim().length > 0) {
       debounceTimeout = setTimeout(async () => {
         try {
-          const res = await axios.get(`/api/products?keyword=${encodeURIComponent(value)}&limit=5`);
+          const res = await axios.get(`/products?keyword=${encodeURIComponent(value)}&limit=5`);
           setSearchResults(res.data.products || []);
         } catch {
           setSearchResults([]);

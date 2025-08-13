@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import { useRouter } from 'next/router';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
@@ -26,11 +26,16 @@ interface Order {
 
 const OrdersListPage: React.FC = () => {
   const router = useRouter();
-  const { data: ordersData, isLoading } = useQuery(
+  const { data: ordersData, isLoading, error } = useQuery(
     'orders',
     async () => {
-      const response = await axios.get('/api/orders');
+      const response = await axios.get('/orders');
       return response.data;
+    },
+    {
+      onError: (error) => {
+        console.error('Error fetching orders:', error);
+      }
     }
   );
 
@@ -61,6 +66,22 @@ const OrdersListPage: React.FC = () => {
                 {[...Array(3)].map((_, index) => (
                   <div key={index} className="h-24 bg-gray-200 rounded"></div>
                 ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <div className="text-red-400 mb-4">
+                  <FiPackage className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Có lỗi xảy ra</h3>
+                <p className="text-gray-600 mb-6">
+                  Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="btn-primary"
+                >
+                  Thử lại
+                </button>
               </div>
             ) : ordersData && ordersData.orders && ordersData.orders.length > 0 ? (
               <div className="space-y-4">

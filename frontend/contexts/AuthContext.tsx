@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import axios from '../lib/axios';
 import { useQueryClient } from 'react-query';
 
 interface User {
@@ -68,10 +68,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           // Set token first
           setToken(storedToken);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
           
           // Then fetch user profile
-          const response = await axios.get('/api/auth/profile');
+          const response = await axios.get('/auth/profile');
           setUser(response.data);
         } catch (error: any) {
           console.error('Auth check failed:', error);
@@ -110,7 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (userData: RegisterData) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await axios.post('/auth/register', userData);
       const { token: newToken, ...userInfo } = response.data;
       
       setToken(newToken);
@@ -132,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const updateProfile = async (data: Partial<User>) => {
     try {
-      const response = await axios.put('/api/auth/profile', data);
+      const response = await axios.put('/auth/profile', data);
       setUser(response.data);
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Cập nhật thất bại');

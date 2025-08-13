@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import axios from '../lib/axios';
 import Image from 'next/image';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
@@ -44,7 +44,7 @@ const CartPage: React.FC = () => {
   const { data: cart, isLoading } = useQuery(
     'cart',
     async () => {
-      const response = await axios.get('/api/cart');
+      const response = await axios.get('/cart');
       return response.data;
     },
     {
@@ -58,7 +58,7 @@ const CartPage: React.FC = () => {
   // Update quantity mutation
   const updateQuantityMutation = useMutation(
     async ({ itemId, quantity }: { itemId: string; quantity: number }) => {
-      const response = await axios.put(`/api/cart/${itemId}`, { quantity });
+      const response = await axios.put(`/cart/${itemId}`, { quantity });
       return response.data;
     },
     {
@@ -75,7 +75,7 @@ const CartPage: React.FC = () => {
   // Remove item mutation
   const removeItemMutation = useMutation(
     async (itemId: string) => {
-      const response = await axios.delete(`/api/cart/${itemId}`);
+      const response = await axios.delete(`/cart/${itemId}`);
       return response.data;
     },
     {

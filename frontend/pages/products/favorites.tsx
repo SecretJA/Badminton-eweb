@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import ProductCard from '../../components/Products/ProductCard';
@@ -12,7 +12,7 @@ import { useAuth } from '../../contexts/AuthContext';
 const FavoritesPage: React.FC = () => {
   const { token } = useAuth();
   const { data: favorites, isLoading, refetch } = useQuery('favorites', async () => {
-    const response = await axios.get('/api/products/favorites', { headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.get('/products/favorites', { headers: { Authorization: `Bearer ${token}` } });
     return response.data;
   });
 

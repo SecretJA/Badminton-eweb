@@ -115,15 +115,20 @@ router.post('/', protect, [
 // @access  Private
 router.get('/', protect, async (req, res) => {
   try {
+    console.log('Getting orders for user:', req.user._id);
     const pageSize = 10;
     const page = Number(req.query.pageNumber) || 1;
 
     const count = await Order.countDocuments({ user: req.user._id });
+    console.log('Found', count, 'orders for user');
+    
     const orders = await Order.find({ user: req.user._id })
       .populate('orderItems.product', 'name mainImage')
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1));
+
+    console.log('Retrieved orders:', orders.length);
 
     // Map lại dữ liệu cho frontend
     const mappedOrders = orders.map(order => ({

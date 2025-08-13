@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { useQuery } from 'react-query';
-import axios from 'axios';
+import axios from '../lib/axios';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import ProductCard from '../components/Products/ProductCard';
@@ -27,7 +27,7 @@ const HomePage: React.FC = () => {
   const { data: featuredProducts, isLoading: loadingProducts } = useQuery(
     'featuredProducts',
     async () => {
-      const response = await axios.get('/api/products/featured');
+      const response = await axios.get('/products/featured');
       return response.data;
     }
   );

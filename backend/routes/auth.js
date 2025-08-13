@@ -3,7 +3,7 @@ const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const { protect, generateToken } = require('../middleware/auth');
 const { canCreateAdmin, canModifyAdmin } = require('../middleware/adminAuth');
-const { encrypt } = require('../utils/encryption');
+const { encrypt, decrypt } = require('../utils/encryption');
 
 const router = express.Router();
 

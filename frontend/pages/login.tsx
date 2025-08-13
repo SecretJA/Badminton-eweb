@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
-import axios from 'axios';
+import axios from '../lib/axios';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
 
   const loginMutation = useMutation(
     async (data: LoginForm) => {
-      const response = await axios.post('/api/auth/login', data);
+      const response = await axios.post('/auth/login', data);
       return response.data;
     },
     {

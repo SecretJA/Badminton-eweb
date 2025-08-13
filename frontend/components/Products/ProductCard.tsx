@@ -5,7 +5,7 @@ import { FiShoppingCart, FiHeart, FiStar } from 'react-icons/fi';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import axios from '../../lib/axios';
 
 interface Product {
   _id: string;
@@ -31,16 +31,19 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', refetchFavorites }) => {
   const { addToCart } = useCart();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (!user) return setIsFavorite(false);
-    axios.get('/api/products/favorites', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get('/products/favorites')
       .then(res => {
         setIsFavorite(res.data.some((p: any) => p._id === product._id));
+      })
+      .catch(err => {
+        console.error('Error fetching favorites:', err);
       });
-  }, [user, product._id, token]);
+  }, [user, product._id]);
 
   const handleFavorite = async () => {
     if (!user) {
@@ -49,11 +52,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', r
     }
     try {
       if (isFavorite) {
-        await axios.delete(`/api/products/${product._id}/favorite`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`/products/${product._id}/favorite`);
         setIsFavorite(false);
         toast.success('Đã xóa khỏi yêu thích');
       } else {
-        await axios.post(`/api/products/${product._id}/favorite`, {}, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`/products/${product._id}/favorite`);
         setIsFavorite(true);
         toast.success('Đã thêm vào yêu thích');
       }

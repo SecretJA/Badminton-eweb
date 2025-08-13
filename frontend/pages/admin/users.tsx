@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import { FiEye, FiEdit3, FiTrash2, FiSearch, FiFilter, FiUsers, FiUser, FiShield, FiMail, FiPhone } from 'react-icons/fi';
@@ -39,7 +39,7 @@ const AdminUsersPage: React.FC = () => {
       if (selectedStatus) params.append('isActive', selectedStatus);
       params.append('limit', '50');
       
-      const response = await axios.get(`/api/admin/users?${params.toString()}`);
+      const response = await axios.get(`/admin/users?${params.toString()}`);
       return response.data;
     }
   );
@@ -47,7 +47,7 @@ const AdminUsersPage: React.FC = () => {
   // Update user role mutation
   const updateUserRoleMutation = useMutation(
     async ({ userId, role }: { userId: string; role: string }) => {
-      const response = await axios.put(`/api/admin/users/${userId}/role`, { role });
+      const response = await axios.put(`/admin/users/${userId}/role`, { role });
       return response.data;
     },
     {
@@ -64,7 +64,7 @@ const AdminUsersPage: React.FC = () => {
   // Update user status mutation
   const updateUserStatusMutation = useMutation(
     async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
-      const response = await axios.put(`/api/admin/users/${userId}/status`, { isActive });
+      const response = await axios.put(`/admin/users/${userId}/status`, { isActive });
       return response.data;
     },
     {
@@ -81,7 +81,7 @@ const AdminUsersPage: React.FC = () => {
   // Delete user mutation
   const deleteUserMutation = useMutation(
     async (userId: string) => {
-      const response = await axios.delete(`/api/admin/users/${userId}`);
+      const response = await axios.delete(`/admin/users/${userId}`);
       return response.data;
     },
     {

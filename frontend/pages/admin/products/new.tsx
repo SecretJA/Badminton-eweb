@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
-import axios from 'axios';
+import axios from '../../../lib/axios';
 import Header from '../../../components/Layout/Header';
 import Footer from '../../../components/Layout/Footer';
 import { FiUpload, FiX, FiSave, FiArrowLeft } from 'react-icons/fi';
@@ -48,7 +48,7 @@ const AdminProductFormPage: React.FC = () => {
   // Create product mutation
   const createProductMutation = useMutation(
     async (data: ProductForm) => {
-      const response = await axios.post('/api/products', data);
+      const response = await axios.post('/products', data);
       return response.data;
     },
     {
@@ -134,7 +134,7 @@ const AdminProductFormPage: React.FC = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('image', files[0]);
 
-      const response = await axios.post('/api/upload', uploadFormData, {
+      const response = await axios.post('/upload', uploadFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

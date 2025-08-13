@@ -54,14 +54,112 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Hình ảnh chính là bắt buộc']
   },
   specifications: {
-    weight: String,
-    material: String,
-    size: String,
-    color: String,
+    // Vợt cầu lông
+    weight: {
+      type: String,
+      trim: true
+    },
+    material: {
+      type: String,
+      trim: true
+    },
+    size: {
+      type: String,
+      trim: true
+    },
+    color: {
+      type: String,
+      trim: true
+    },
     level: {
       type: String,
-      enum: ['beginner', 'intermediate', 'advanced', 'professional']
-    }
+      enum: ['beginner', 'intermediate', 'advanced', 'professional'],
+      trim: true
+    },
+    // Thông số kỹ thuật vợt
+    balance: {
+      type: String,
+      trim: true // Head Heavy, Even Balance, Head Light
+    },
+    flexibility: {
+      type: String,
+      enum: ['stiff', 'medium', 'flexible'],
+      trim: true
+    },
+    stringTension: {
+      type: String,
+      trim: true // VD: "20-28 lbs"
+    },
+    shaftMaterial: {
+      type: String,
+      trim: true // VD: "Carbon Fiber"
+    },
+    frameWidth: {
+      type: String,
+      trim: true // VD: "9.5mm"
+    },
+    // Giày cầu lông
+    shoeSole: {
+      type: String,
+      trim: true // Non-marking rubber
+    },
+    cushioning: {
+      type: String,
+      trim: true // Power Cushion, etc.
+    },
+    upperMaterial: {
+      type: String,
+      trim: true // Synthetic leather, mesh
+    },
+    // Quần áo
+    fabric: {
+      type: String,
+      trim: true // Polyester, Cotton blend
+    },
+    fit: {
+      type: String,
+      enum: ['slim', 'regular', 'loose'],
+      trim: true
+    },
+    breathability: {
+      type: String,
+      trim: true
+    },
+    // Phụ kiện
+    length: {
+      type: String,
+      trim: true
+    },
+    width: {
+      type: String,
+      trim: true
+    },
+    thickness: {
+      type: String,
+      trim: true
+    },
+    // Thông số chung
+    warranty: {
+      type: String,
+      trim: true
+    },
+    madeIn: {
+      type: String,
+      trim: true
+    },
+    // Thông số tùy chỉnh
+    customSpecs: [{
+      name: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      value: {
+        type: String,
+        required: true,
+        trim: true
+      }
+    }]
   },
   rating: {
     type: Number,

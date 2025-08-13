@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
-import axios from 'axios';
+import axios from '../../lib/axios';
 import Image from 'next/image';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import ProductCard from '../../components/Products/ProductCard';
+import ReviewSection from '../../components/Products/ReviewSection';
+import ProductSpecifications from '../../components/Products/ProductSpecifications';
 import { FiStar, FiShoppingCart, FiHeart, FiShare2, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -34,9 +36,11 @@ interface Product {
 interface Review {
   _id: string;
   user: {
+    _id: string;
     name: string;
     avatar?: string;
   };
+  name: string;
   rating: number;
   comment: string;
   createdAt: string;
@@ -51,12 +55,14 @@ const ProductDetailPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description');
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isAddingToFavorites, setIsAddingToFavorites] = useState(false);
 
   // Fetch product details
   const { data: product, isLoading: loadingProduct } = useQuery(
     ['product', id],
     async () => {
-      const response = await axios.get(`/api/products/${id}`);
+      const response = await axios.get(`/products/${id}`);
       return response.data;
     },
     {
@@ -71,11 +77,26 @@ const ProductDetailPage: React.FC = () => {
   const { data: relatedProducts } = useQuery(
     ['relatedProducts', product?.category],
     async () => {
-      const response = await axios.get(`/api/products?category=${product.category}&limit=4`);
+      const response = await axios.get(`/products?category=${product.category}&limit=4`);
       return response.data.products.filter((p: Product) => p._id !== id);
     },
     {
       enabled: !!product?.category
+    }
+  );
+
+  // Fetch user favorites
+  const { data: userFavorites, refetch: refetchFavorites } = useQuery(
+    ['userFavorites'],
+    async () => {
+      const response = await axios.get('/products/favorites');
+      return response.data;
+    },
+    {
+      enabled: !!user,
+      onSuccess: (favorites) => {
+        setIsFavorite(favorites.some((fav: any) => fav._id === id));
+      }
     }
   );
 
@@ -95,6 +116,31 @@ const ProductDetailPage: React.FC = () => {
       toast.success('Đã thêm vào giỏ hàng');
     } catch (error) {
       toast.error('Có lỗi xảy ra khi thêm vào giỏ hàng');
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      toast.error('Vui lòng đăng nhập để thêm vào yêu thích');
+      return;
+    }
+
+    setIsAddingToFavorites(true);
+    try {
+      if (isFavorite) {
+        await axios.delete(`/products/${id}/favorite`);
+        toast.success('Đã xóa khỏi yêu thích');
+        setIsFavorite(false);
+      } else {
+        await axios.post(`/products/${id}/favorite`);
+        toast.success('Đã thêm vào yêu thích');
+        setIsFavorite(true);
+      }
+      refetchFavorites();
+    } catch (error) {
+      toast.error('Có lỗi xảy ra');
+    } finally {
+      setIsAddingToFavorites(false);
     }
   };
 
@@ -337,9 +383,19 @@ const ProductDetailPage: React.FC = () => {
 
               {/* Actions */}
               <div className="flex items-center space-x-4 mb-6">
-                <button className="flex items-center text-gray-600 hover:text-primary-600">
-                  <FiHeart className="w-5 h-5 mr-2" />
-                  Yêu thích
+                <button 
+                  onClick={handleToggleFavorite}
+                  disabled={isAddingToFavorites}
+                  className={`flex items-center transition-colors ${
+                    isFavorite 
+                      ? 'text-red-600 hover:text-red-700' 
+                      : 'text-gray-600 hover:text-primary-600'
+                  } ${isAddingToFavorites ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <FiHeart 
+                    className={`w-5 h-5 mr-2 ${isFavorite ? 'fill-current' : ''}`} 
+                  />
+                  {isFavorite ? 'Đã yêu thích' : 'Yêu thích'}
                 </button>
                 <button className="flex items-center text-gray-600 hover:text-primary-600">
                   <FiShare2 className="w-5 h-5 mr-2" />
@@ -411,56 +467,20 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {activeTab === 'specifications' && product.specifications && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="font-medium text-gray-700">{key}</span>
-                      <span className="text-gray-600">{String(value)}</span>
-                    </div>
-                  ))}
-                </div>
+              {activeTab === 'specifications' && (
+                <ProductSpecifications 
+                  specifications={product.specifications || {}}
+                  category={product.category}
+                />
               )}
 
               {activeTab === 'reviews' && (
-                <div>
-                                     {product.reviews && product.reviews.length > 0 ? (
-                     <div className="space-y-6">
-                       {product.reviews.map((review: Review) => (
-                         <div key={review._id} className="border-b border-gray-200 pb-6">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                <span className="text-sm font-medium text-gray-600">
-                                  {review.user.name.charAt(0).toUpperCase()}
-                                </span>
-                              </div>
-                              <div>
-                                <div className="font-medium text-gray-900">{review.user.name}</div>
-                                <div className="text-sm text-gray-500">{formatDate(review.createdAt)}</div>
-                              </div>
-                            </div>
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, index) => (
-                                <FiStar
-                                  key={index}
-                                  className={`w-4 h-4 ${
-                                    index < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-gray-700">{review.comment}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500">Chưa có đánh giá nào cho sản phẩm này.</p>
-                    </div>
-                  )}
-                </div>
+                <ReviewSection
+                  productId={product._id}
+                  reviews={product.reviews || []}
+                  averageRating={product.rating}
+                  totalReviews={product.numReviews}
+                />
               )}
             </div>
           </div>

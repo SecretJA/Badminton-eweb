@@ -11,6 +11,8 @@ const router = express.Router();
 // @access  Public
 router.get('/', async (req, res) => {
   try {
+    console.log('Products query params:', req.query);
+    
     const pageSize = 12;
     const page = Number(req.query.pageNumber) || 1;
     
@@ -27,14 +29,25 @@ router.get('/', async (req, res) => {
 
     const categoryFilter = req.query.category ? { category: req.query.category } : {};
     const brandFilter = req.query.brand ? { brand: req.query.brand } : {};
-    const priceFilter = req.query.minPrice || req.query.maxPrice 
-      ? {
-          price: {
-            ...(req.query.minPrice && { $gte: Number(req.query.minPrice) }),
-            ...(req.query.maxPrice && { $lte: Number(req.query.maxPrice) })
-          }
+    
+    // Handle price range filter
+    let priceFilter = {};
+    if (req.query.priceRange) {
+      const [minPrice, maxPrice] = req.query.priceRange.split('-').map(Number);
+      priceFilter = {
+        price: {
+          $gte: minPrice,
+          $lte: maxPrice
         }
-      : {};
+      };
+    } else if (req.query.minPrice || req.query.maxPrice) {
+      priceFilter = {
+        price: {
+          ...(req.query.minPrice && { $gte: Number(req.query.minPrice) }),
+          ...(req.query.maxPrice && { $lte: Number(req.query.maxPrice) })
+        }
+      };
+    }
 
     const filters = {
       ...keyword,
@@ -43,6 +56,8 @@ router.get('/', async (req, res) => {
       ...priceFilter,
       isActive: true
     };
+
+    console.log('Applied filters:', JSON.stringify(filters, null, 2));
 
     const count = await Product.countDocuments(filters);
     const products = await Product.find(filters)
@@ -249,6 +264,37 @@ router.put('/:id', protect, admin, [
   }
 });
 
+// @desc    Update product specifications
+// @route   PUT /api/products/:id/specifications
+// @access  Private/Admin
+router.put('/:id/specifications', protect, admin, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+
+    // Update specifications
+    product.specifications = {
+      ...product.specifications,
+      ...req.body
+    };
+
+    const updatedProduct = await product.save();
+    res.json({
+      message: 'Cập nhật thông số kỹ thuật thành công',
+      specifications: updatedProduct.specifications
+    });
+  } catch (error) {
+    console.error('Update specifications error:', error);
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+});
+
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
@@ -325,6 +371,125 @@ router.post('/:id/reviews', protect, [
     console.error('Create review error:', error);
     if (error.kind === 'ObjectId') {
       return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+});
+
+// @desc    Get all reviews (Admin)
+// @route   GET /api/products/reviews/all
+// @access  Private/Admin
+router.get('/reviews/all', protect, admin, async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = req.query.search || '';
+    const rating = req.query.rating ? Number(req.query.rating) : null;
+
+    const products = await Product.find({ 'reviews.0': { $exists: true } })
+      .populate({
+        path: 'reviews.user',
+        select: 'name email',
+        options: { strictPopulate: false }
+      })
+      .select('name mainImage reviews')
+      .sort({ 'reviews.createdAt': -1 });
+
+    // Flatten all reviews with product info
+    const allReviews = [];
+    products.forEach(product => {
+      product.reviews.forEach(review => {
+        // Handle case where user might not exist
+        const userInfo = review.user || { name: review.name || 'Unknown User', email: '' };
+        
+        allReviews.push({
+          _id: review._id,
+          product: {
+            _id: product._id,
+            name: product.name,
+            image: product.mainImage
+          },
+          user: {
+            _id: userInfo._id || '',
+            name: userInfo.name || review.name || 'Unknown User',
+            email: userInfo.email || ''
+          },
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt
+        });
+      });
+    });
+
+    // Filter by search
+    let filteredReviews = allReviews;
+    if (search) {
+      filteredReviews = allReviews.filter(review => 
+        review.product.name.toLowerCase().includes(search.toLowerCase()) ||
+        review.user.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Filter by rating
+    if (rating) {
+      filteredReviews = filteredReviews.filter(review => review.rating === rating);
+    }
+
+    // Sort by date and paginate
+    filteredReviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const total = filteredReviews.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedReviews = filteredReviews.slice(startIndex, endIndex);
+
+    res.json({
+      reviews: paginatedReviews,
+      totalReviews: total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page
+    });
+  } catch (error) {
+    console.error('Get all reviews error:', error);
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+});
+
+// @desc    Delete a review (Admin)
+// @route   DELETE /api/products/:productId/reviews/:reviewId
+// @access  Private/Admin
+router.delete('/:productId/reviews/:reviewId', protect, admin, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+    }
+
+    const reviewIndex = product.reviews.findIndex(
+      review => review._id.toString() === req.params.reviewId
+    );
+
+    if (reviewIndex === -1) {
+      return res.status(404).json({ message: 'Không tìm thấy đánh giá' });
+    }
+
+    // Remove review
+    product.reviews.splice(reviewIndex, 1);
+    
+    // Recalculate rating and numReviews
+    product.numReviews = product.reviews.length;
+    if (product.reviews.length > 0) {
+      product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+    } else {
+      product.rating = 0;
+    }
+
+    await product.save();
+    res.json({ message: 'Đánh giá đã được xóa' });
+  } catch (error) {
+    console.error('Delete review error:', error);
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm hoặc đánh giá' });
     }
     res.status(500).json({ message: 'Lỗi server' });
   }

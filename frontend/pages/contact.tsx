@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useMutation } from 'react-query';
-import axios from 'axios';
+import axios from '../lib/axios';
 import Header from '../components/Layout/Header';
 import Footer from '../components/Layout/Footer';
 import { FiMapPin, FiPhone, FiMail, FiClock, FiSend } from 'react-icons/fi';
@@ -26,7 +26,7 @@ const ContactPage: React.FC = () => {
 
   const contactMutation = useMutation(
     async (data: ContactForm) => {
-      const response = await axios.post('/api/contact', data);
+      const response = await axios.post('/contact', data);
       return response.data;
     },
     {

@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import axios from 'axios';
+import axios from '../../../lib/axios';
 import Image from 'next/image';
 import Header from '../../../components/Layout/Header';
 import Footer from '../../../components/Layout/Footer';
-import { FiPlus, FiEdit3, FiTrash2, FiEye, FiSearch, FiFilter } from 'react-icons/fi';
+import { FiPlus, FiEdit3, FiTrash2, FiEye, FiSearch, FiFilter, FiTool } from 'react-icons/fi';
 import { useAuth } from '../../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { ProtectedRoute } from '../../../components/Auth';
+import SpecificationsModal from '../../../components/Admin/SpecificationsModal';
 
 interface Product {
   _id: string;
@@ -26,6 +27,7 @@ interface Product {
   isFeatured: boolean;
   isActive: boolean;
   createdAt: string;
+  specifications?: any;
 }
 
 const AdminProductsPage: React.FC = () => {
@@ -35,6 +37,15 @@ const AdminProductsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('');
+  const [specificationsModal, setSpecificationsModal] = useState<{
+    isOpen: boolean;
+    productId: string;
+    specifications: any;
+  }>({
+    isOpen: false,
+    productId: '',
+    specifications: {}
+  });
 
   // Fetch products
   const { data: productsData, isLoading } = useQuery(
@@ -46,7 +57,7 @@ const AdminProductsPage: React.FC = () => {
       if (selectedBrand) params.append('brand', selectedBrand);
       params.append('limit', '50');
       
-      const response = await axios.get(`/api/products?${params.toString()}`);
+      const response = await axios.get(`/products?${params.toString()}`);
       return response.data;
     }
   );
@@ -54,7 +65,7 @@ const AdminProductsPage: React.FC = () => {
   // Delete product mutation
   const deleteProductMutation = useMutation(
     async (productId: string) => {
-      const response = await axios.delete(`/api/products/${productId}`);
+      const response = await axios.delete(`/products/${productId}`);
       return response.data;
     },
     {
@@ -306,6 +317,17 @@ const AdminProductsPage: React.FC = () => {
                               <FiEdit3 className="w-4 h-4" />
                             </button>
                             <button
+                              onClick={() => setSpecificationsModal({
+                                isOpen: true,
+                                productId: product._id,
+                                specifications: product.specifications || {}
+                              })}
+                              className="text-purple-600 hover:text-purple-900"
+                              title="Thông số kỹ thuật"
+                            >
+                              <FiTool className="w-4 h-4" />
+                            </button>
+                            <button
                               onClick={() => handleDeleteProduct(product._id, product.name)}
                               className="text-red-600 hover:text-red-900"
                               title="Xóa"
@@ -336,6 +358,14 @@ const AdminProductsPage: React.FC = () => {
       </main>
 
       <Footer />
+
+      {/* Specifications Modal */}
+      <SpecificationsModal
+        isOpen={specificationsModal.isOpen}
+        onClose={() => setSpecificationsModal(prev => ({ ...prev, isOpen: false }))}
+        productId={specificationsModal.productId}
+        currentSpecifications={specificationsModal.specifications}
+      />
     </ProtectedRoute>
   );
 };
