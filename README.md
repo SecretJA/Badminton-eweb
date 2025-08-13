@@ -17,7 +17,6 @@
   </a>
 </p>
 
->>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 - [🚀 Quick Start](#-quick-start)
 - [✨ Tính năng chính](#-tính-năng-chính)
