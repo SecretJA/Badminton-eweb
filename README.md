@@ -514,7 +514,6 @@ DELETE /api/cart/:id     # Xóa khỏi giỏ hàng
 
 ### 1. Cài đặt Extensions:
 
-<<<<<<< HEAD
 Cài đặt các extension sau trong VS Code:
 
 ```json
@@ -532,8 +531,6 @@ Cài đặt các extension sau trong VS Code:
 ```
 
 ### 2. Cấu hình Workspace:
-=======
->>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 Tạo file `.vscode/settings.json`:
 
@@ -559,9 +556,7 @@ Tạo file `.vscode/settings.json`:
 
 ### 3. Cấu hình Tasks:
 
-<<<<<<< HEAD
 Tạo file `.vscode/tasks.json`:
-=======
 
 
 ## 🔄 Lưu ý: Hướng dẫn khởi động lại website khi deploy production (xem chi tiết trong file CICD_SETUP.md)
@@ -586,7 +581,6 @@ Tóm tắt:
 **Xem hướng dẫn chi tiết, các lưu ý bảo mật, backup, log... trong file CICD_SETUP.md**
 
 ## 🚀 Deployment
->>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 ```json
 {
@@ -637,7 +631,6 @@ Tóm tắt:
 
 Tạo file `.vscode/launch.json`:
 
-<<<<<<< HEAD
 ```json
 {
   "version": "0.2.0",
