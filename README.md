@@ -17,7 +17,6 @@
   </a>
 </p>
 
->>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 - [🚀 Quick Start](#-quick-start)
 - [✨ Tính năng chính](#-tính-năng-chính)
@@ -129,12 +128,9 @@ Một ứng dụng thương mại điện tử chuyên về đồ cầu lông đ
 
 ## ⚡ Cài đặt nhanh
 
-<<<<<<< HEAD
 ### � Quick Start (5 phút)
-=======
 
 ## 🚀 Hướng dẫn cài đặt & chạy trên máy cá nhân/IDE (Local Development)
->>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 ```bash
 # 1. Clone repository
@@ -863,4 +859,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## 🙏 Cảm ơn
 
 Cảm ơn bạn đã quan tâm đến dự án Badminton Shop! Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi. 
->>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
