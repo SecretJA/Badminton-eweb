@@ -16,7 +16,7 @@
     <img src="https://img.shields.io/badge/Xem%20hướng%20dẫn%20CI%2FCD%20và%20triển%20khai-blue?logo=jenkins&logoColor=white" alt="CI/CD Setup"/>
   </a>
 </p>
-
+>>>>>>> 267205a45ec30a32f2399392bc9f0a54954425a5
 
 - [🚀 Quick Start](#-quick-start)
 - [✨ Tính năng chính](#-tính-năng-chính)
