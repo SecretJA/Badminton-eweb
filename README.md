@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# # 🏸 Badminton E-commerce Website## 📖 Mục lục
+##🏸 Badminton E-commerce Website## 📖 Mục lục
 =======
 
 
